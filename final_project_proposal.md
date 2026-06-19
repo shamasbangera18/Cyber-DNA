@@ -1,5 +1,6 @@
 # Cyber DNA: A Human-Centered Behavioral Similarity Assessment Framework with Behavioral Drift Analysis
 
+## 1. Executive Summary
 ### Abstract
 The increasing use of multiple digital identities, anonymous accounts, and identity obfuscation techniques presents significant challenges for cybersecurity investigations and attribution. Traditional approaches rely heavily on volatile technical indicators such as IP addresses, device identifiers, login credentials, and network artifacts. However, these indicators can be easily concealed, manipulated, or altered through Virtual Private Networks (VPNs), device switching, account sharing, and identity spoofing. 
 
@@ -9,30 +10,22 @@ The proposed framework is designed for evaluation using the industry-standard **
 
 Finally, a calibration sweep of the adaptive Departmental Similarity Filter demonstrates that corporate users exhibit high inter-departmental baseline similarity ($BSI > 0.95$) with narrow cohesion variance ($\sigma_D \approx 0.01$). Active Z-score suppression leads to over-suppression of true threat signatures, dropping the F1-score to **2.38%** (at $Z = -2.5$). Consequently, the active suppression filter is disabled (BSI threshold = 1.0) for deployment to preserve maximum recall. The research contributes to Cyber Anthropology, behavioral analytics, digital forensics, and human-centered cybersecurity by providing a unified approach for behavioral similarity assessment and behavioral evolution analysis.
 
----
-
-## 1. Introduction
+### Introduction
 Modern digital environments allow individuals to interact through multiple digital identities across enterprise systems, communication platforms, and online services. While digital identities offer flexibility and privacy, they also introduce challenges for cybersecurity investigations, fraud detection, and insider threat analysis.
 
 Traditional attribution methods rely on technical indicators such as IP addresses, device fingerprints, authentication logs, and network metadata. However, these indicators can be altered or concealed, reducing their reliability for long-term behavioral analysis. Human behavioral characteristics are often more persistent than technical identifiers. Individuals tend to exhibit consistent activity patterns, communication habits, organizational interaction styles, and behavioral routines throughout their digital activities.
 
 Cyber Anthropology studies how individuals construct identities, maintain behavioral consistency, and interact within digital environments. This research proposes to investigate whether these persistent behavioral characteristics can be transformed into Digital Behavioral Signatures and whether changes in those signatures over time can provide deeper insights into digital identity behavior.
 
----
-
-## 2. Problem Statement
+### Problem Statement
 Current cybersecurity investigations rely primarily on technical identifiers that can be manipulated or hidden. Existing behavioral analysis approaches often focus on individual techniques such as stylometry, behavioral biometrics, or activity monitoring without integrating multiple behavioral dimensions. Furthermore, most existing approaches analyze behavior at a single point in time and do not consider how digital behavior evolves. 
 
 There is a need for a unified framework capable of combining behavioral patterns, communication characteristics, organizational interactions, identity persistence indicators, and behavioral evolution metrics to generate comprehensive Digital Behavioral Signatures for behavioral similarity assessment. This work addresses this need by proposing, implementing, and validating the Cyber DNA framework on real-world insider threat data.
 
----
-
-## 3. Aim of the Study
+### Aim of the Study
 To develop, implement, and evaluate the Cyber DNA framework that generates Digital Behavioral Signatures and performs behavioral similarity assessment using activity patterns, communication behaviors, organizational interactions, identity persistence characteristics, and behavioral drift indicators. The proposed framework is validated experimentally on the CMU CERT r4.2 dataset and visualized through an interactive analytics dashboard.
 
----
-
-## 4. Objectives
+### Objectives
 ### Primary Objective
 To design and evaluate the Cyber DNA framework for behavioral similarity assessment using Digital Behavioral Signatures.
 
@@ -45,9 +38,7 @@ To design and evaluate the Cyber DNA framework for behavioral similarity assessm
 6. To evaluate the effectiveness of behavioral similarity assessment using the CMU CERT r4.2 dataset.
 7. To develop a Behavioral Drift Score (BDS) for measuring behavioral evolution over time.
 
----
-
-## 5. Novelty of the Research
+### Novelty of the Research
 Existing research often studies behavioral biometrics, stylometry, user profiling, activity monitoring, and identity analysis separately. The novelty of Cyber DNA lies in integrating:
 - Activity behavior
 - Communication behavior
@@ -59,9 +50,7 @@ into a unified Digital Behavioral Signature framework. The proposed Behavioral S
 
 Unlike existing behavioral analytics approaches that primarily perform static analysis, the proposed Cyber DNA framework introduces Behavioral Drift Analysis through the Behavioral Drift Score (BDS). This enables the framework to analyze not only behavioral similarity between digital identities but also behavioral evolution over time, providing a dynamic perspective on digital identity behavior.
 
----
-
-## 6. Cyber Anthropology Contribution
+### Cyber Anthropology Contribution
 The project proposes to incorporate anthropological concepts as measurable behavioral indicators.
 
 ### Digital Identity Persistence (IDP)
@@ -81,9 +70,7 @@ Measures how digital identities evolve over time and how behavioral characterist
 
 These indicators extend traditional behavioral analytics by incorporating human-centered perspectives from Cyber Anthropology.
 
----
-
-## 7. Proposed Cyber DNA Framework Architecture
+### Proposed Cyber DNA Framework Architecture
 The framework consists of five analytical layers.
 
 ```
@@ -150,8 +137,48 @@ This layer ingests the 8 raw DBS features, the weekly BDS, the departmental BSI,
 
 ---
 
-## 8. Digital Behavioral Signature (DBS) & Mathematical Framework
+## 2. Dataset & Experimental Setup
+### 9.1 Dataset Selection
+The framework is evaluated using the standard **CMU CERT Insider Threat Dataset r4.2**. The global dataset contains event logs for 1,000 corporate users spanning 1.5 years.
 
+### 9.2 Chronological Train/Test Partitioning
+To prevent temporal data leakage and represent a realistic deployment model, the dataset is split chronologically:
+* **Training Partition (Weeks 1 to 52)**: 49,867 user-weeks (240 malicious, 49,627 benign).
+* **Testing Partition (Weeks 53 to 72)**: 17,300 user-weeks (82 malicious, 17,218 benign).
+
+All normalizers (Min-Max bounds) and departmental centroids are fit strictly on training benign weeks.
+
+### 9.3 Experimental Cohort Selection
+A representative evaluation cohort of **170 users** is selected:
+* **70 Malicious Users**: All threat users present in the dataset.
+* **100 Benign Users**: Randomly selected (seed 42) to establish stable departmental baselines.
+
+### 9.4 Vectorized Feature Extraction & Preprocessing
+To scale the pipeline to gigabytes of event logs, fully vectorized operations are implemented:
+1. **Logon Session Pairing**: Chronological sorting and group-by column shifting ($O(N)$ vectorized shift) are used to match Logons with Logoffs, replacing nested pandas `iterrows()` loops.
+2. **Email Content parsing**: Lexical tokenization is optimized by computing word frequencies individually per email rather than concatenating millions of body strings, preventing Out-Of-Memory (OOM) crashes.
+3. **Explode & Set Operations**: Reciprocal communication counts are vectorized using parallel recipient splits.
+
+### 2.1 Global Dataset Statistics
+The statistical breakdown of the processed dataset is shown in Table 1:
+
+### Table 1: Dataset Statistics
+| Metric | Count |
+| :--- | :---: |
+| Total Corporate Users | 1,000 |
+| Total Malicious Users | 70 |
+| Total Benign Users | 930 |
+| Total User-Weeks | 67,167 |
+| Total Benign Weeks | 66,845 |
+| Total Malicious Weeks | 322 |
+| Train Split User-Weeks (W1-52) | 49,867 |
+| Test Split User-Weeks (W53-72) | 17,300 |
+| Insiders Evaluation Cohort | 170 |
+| Dashboard Visualized Cohort | 100 |
+
+---
+
+## 3. Mathematical Framework
 ### 8.1 Normalized Feature Construction
 To prevent feature-range inflation on small datasets or quiet cohorts, raw features $f_i$ are normalized to the unit hypercube using absolute domain-specific bounds:
 
@@ -267,52 +294,8 @@ $$
 
 ---
 
-## 9. Proposed Methodology
-
-### 9.1 Dataset Selection
-The framework is evaluated using the standard **CMU CERT Insider Threat Dataset r4.2**. The global dataset contains event logs for 1,000 corporate users spanning 1.5 years.
-
-### 9.2 Chronological Train/Test Partitioning
-To prevent temporal data leakage and represent a realistic deployment model, the dataset is split chronologically:
-* **Training Partition (Weeks 1 to 52)**: 49,867 user-weeks (240 malicious, 49,627 benign).
-* **Testing Partition (Weeks 53 to 72)**: 17,300 user-weeks (82 malicious, 17,218 benign).
-
-All normalizers (Min-Max bounds) and departmental centroids are fit strictly on training benign weeks.
-
-### 9.3 Experimental Cohort Selection
-A representative evaluation cohort of **170 users** is selected:
-* **70 Malicious Users**: All threat users present in the dataset.
-* **100 Benign Users**: Randomly selected (seed 42) to establish stable departmental baselines.
-
-### 9.4 Vectorized Feature Extraction & Preprocessing
-To scale the pipeline to gigabytes of event logs, fully vectorized operations are implemented:
-1. **Logon Session Pairing**: Chronological sorting and group-by column shifting ($O(N)$ vectorized shift) are used to match Logons with Logoffs, replacing nested pandas `iterrows()` loops.
-2. **Email Content parsing**: Lexical tokenization is optimized by computing word frequencies individually per email rather than concatenating millions of body strings, preventing Out-Of-Memory (OOM) crashes.
-3. **Explode & Set Operations**: Reciprocal communication counts are vectorized using parallel recipient splits.
-
----
-
-## 10. Experimental Results (Validation Study)
-To validate the proposed Cyber DNA framework, empirical evaluations were conducted on the CMU CERT r4.2 dataset, yielding the findings detailed below.
-
-### 10.1 Global Dataset Statistics
-The statistical breakdown of the processed dataset is shown in Table 1:
-
-### Table 1: Dataset Statistics
-| Metric | Count |
-| :--- | :---: |
-| Total Corporate Users | 1,000 |
-| Total Malicious Users | 70 |
-| Total Benign Users | 930 |
-| Total User-Weeks | 67,167 |
-| Total Benign Weeks | 66,845 |
-| Total Malicious Weeks | 322 |
-| Train Split User-Weeks (W1-52) | 49,867 |
-| Test Split User-Weeks (W53-72) | 17,300 |
-| Insiders Evaluation Cohort | 170 |
-| Dashboard Visualized Cohort | 100 |
-
-### 10.2 Machine Learning Benchmarks
+## 4. Experimental Results
+### 4.1 Machine Learning Benchmarks
 Supervised classifiers were trained on the training partition and evaluated on the out-of-sample test partition (Weeks 53–72). Supervised models significantly outperform unsupervised anomaly detection baselines:
 
 ### Table 2: Classifier Performance (Weeks 53-72)
@@ -323,7 +306,7 @@ Supervised classifiers were trained on the training partition and evaluated on t
 | **One-Class SVM** | 3.80% | 3.66% | 3.73% | 0.0428 |
 | **Isolation Forest** | 1.67% | 1.22% | 1.41% | 0.0322 |
 
-### 10.3 Feature Ablation Study
+### 4.2 Feature Ablation Study
 The ablation study (Table 3) evaluated using XGBoost validates the performance contribution of adding temporal and anthropological features:
 
 ### Table 3: Feature Ablation Study (XGBoost)
@@ -338,7 +321,79 @@ The ablation study (Table 3) evaluated using XGBoost validates the performance c
 > [!NOTE]
 > Combining **DBS + Anthropology** increases precision from **14.55% to 44.44%** and increases the AUPRC to **0.1269**, confirming that mathematical anthropology metrics significantly suppress false-positive alerts.
 
-### 10.4 Departmental Similarity Filter Sweep & Calibration
+### 4.3 Deployed Analytics Dashboard
+To visualize and interact with the results of the Cyber DNA framework, we deployed a web-based interactive analytics dashboard. The interface provides key visual components:
+
+#### Overview Tab
+Provides global cohort statistics, threat distributions, model comparisons, and case studies:
+![Overview Dashboard](screenshots/overview.png)
+
+#### Cyber Anthropology Tab
+Visualizes the weekly composite scores (BCS, CSS, IPS) and the long-term static consistency scores (IDP, BC, SRC) for selected users:
+![Cyber Anthropology Dashboard](screenshots/anthropology.png)
+
+#### Temporal Drift (BDS) Tab
+Traces the weekly self-drift timeline for users, illustrating how malicious users spikes relate to baseline weeks:
+![Temporal Drift Dashboard](screenshots/drift_analytics.png)
+
+#### BSI Similarity Heatmap Tab
+Draws the pairwise cosine similarity matrix of Digital Behavioral Signatures for the cohort:
+![BSI Similarity Heatmap](screenshots/similarity_heatmap.png)
+
+#### Research & Sweeps Tab
+Illustrates the experimental benchmarks, ablation studies, and departmental Z-score filter calibration sweeps:
+![Research and Sweeps Dashboard](screenshots/research_results.png)
+
+---
+
+## 5. Interpretation of Cyber Anthropology Metrics
+
+The average anthropological consistency scores for benign and malicious users are shown in Table 5:
+
+### Table 5: Anthropology Averages
+| User Type | Mean IDP | Mean BC | Mean SRC |
+| :--- | :---: | :---: | :---: |
+| Benign Users | **0.8647** | **0.9238** | 0.9858 |
+| Malicious Users | 0.8622 | 0.9222 | **0.9864** |
+
+Mean IDP, BC, and SRC values for benign and malicious populations are very close. These metrics are not intended to serve as standalone anomaly thresholds. Their value emerges when combined with other behavioral features inside non-linear classifiers such as XGBoost. Anthropology metrics capture longitudinal consistency and behavioral structure rather than direct maliciousness. Small population-level differences do not imply low predictive utility. Interaction effects between anthropology metrics and DBS features can significantly improve precision despite weak marginal separation, as seen in the ablation study. Consequently, anthropology metrics should be interpreted as behavioral context features rather than direct indicators of insider threat activity.
+
+
+---
+
+## 6. Related Work
+
+This section compares Cyber DNA against existing methodologies:
+
+1. **Traditional Rule-Based Insider Threat Detection**: These systems rely on strict thresholds (e.g., "more than 50 emails sent"). Cyber DNA instead uses proportional behavioral signatures that adapt to user baselines.
+2. **User and Entity Behavior Analytics (UEBA)**: Systems like Splunk UBA and Microsoft Sentinel UEBA look at broad network anomalies. Cyber DNA introduces Digital Behavioral Signatures (DBS) with deep focus on human communication and interaction structures.
+3. **Statistical Behavioral Profiling Systems**: Approaches by Glasser & Lindauer (2013) introduced dataset foundations, but lacked longitudinal continuity. Cyber DNA addresses this via Behavioral Drift Scores (BDS).
+4. **Machine Learning Insider Threat Detection Approaches**: Gavai et al. and other behavioral anomaly detection approaches primarily perform point-in-time classification. Cyber DNA utilizes Cyber Anthropology metrics (IDP, BC, SRC) to measure behavioral evolution over time.
+5. **CERT Dataset Research Literature**: Prior studies on CERT often achieve low precision due to overlapping benign/malicious distributions. Cyber DNA introduces Behavioral Similarity Indices (BSI) and longitudinal behavioral consistency modeling to suppress false positives.
+
+| System Type | Approach | Cyber DNA Difference |
+| :--- | :--- | :--- |
+| Traditional Rule-Based | Static thresholds | Adaptive DBS profiles |
+| Standard UEBA | Broad event anomalies | Cyber Anthropology metrics |
+| ML Point-in-time | Independent weekly classification | Behavioral Drift Scores (BDS) |
+
+
+---
+
+## 7. Class Imbalance Considerations
+
+* Total malicious weeks: 322
+* Total user-weeks: 67,167
+* Malicious ratio: approximately 0.48%
+
+Insider threat detection is an extreme class-imbalance problem. Accuracy is not an appropriate metric, as a model that predicts "benign" 100% of the time would achieve 99.52% accuracy. For this reason, Precision, Recall, F1-score, and AUPRC are emphasized. Low recall is expected under severe imbalance, especially when relying on purely behavioral (non-content) features. The reported results should be interpreted in that context; a precision of 44.44% represents a massive gain over the ~0.48% random guessing baseline.
+
+Alternative strategies not implemented in this phase include class weighting, cost-sensitive learning, SMOTE, oversampling, and undersampling. These remain future research directions.
+
+
+---
+
+## 8. Department Filter Calibration Analysis
 An adaptive Z-score filter was implemented to suppress false alarms caused by role transitions (e.g. transfers):
 
 $$
@@ -365,68 +420,64 @@ where $\mathbf{DBS}_{D, W}$ is the centroid of department $D$ and $\mu_D, \sigma
 2. **Aggressive Suppression**: Because BSI values are high and standard deviations ($\sigma_D$) are narrow ($\approx 0.01$), Z-scores satisfy $Z \ge -2.5$ for almost all alerts. This causes the filter to suppress 75% to 100% of malicious weeks, dropping $F_1$ to near zero.
 3. **Deployment Setting**: To prevent over-suppression of true threats, the BSI resemblance gate has been set to **`1.0`** (effectively disabling suppression) for active deployment, preserving the raw XGBoost F1-score of `11.68%`.
 
-### 10.5 Cyber Anthropology Cohort Averages
-The average anthropological consistency scores for benign and malicious users are shown in Table 5:
+---
 
-### Table 5: Anthropology Averages
-| User Type | Mean IDP | Mean BC | Mean SRC |
-| :--- | :---: | :---: | :---: |
-| Benign Users | **0.8647** | **0.9238** | 0.9858 |
-| Malicious Users | 0.8622 | 0.9222 | **0.9864** |
+## 9. Threats to Validity
+
+### Internal Validity
+* **Feature selection limitations**: Only 8 raw behavioral features were used.
+* **Potential modeling assumptions**: Assumes weekly granularity captures meaningful changes.
+* **Behavioral baseline assumptions**: Assumes the training period contains purely benign baseline behavior.
+
+### External Validity
+* **Evaluation limited to CERT r4.2**: Results may not directly translate to different datasets.
+* **Enterprise-specific behavior patterns**: Different organizations have different interaction norms.
+* **Generalization concerns**: The model requires fitting normalizers and centroids specific to the deployed environment.
+
+### Construct Validity
+* **Whether DBS fully captures human behavior**: Excludes content-based linguistics, file types, and deep network packet inspection.
+* **Interpretation of anthropology metrics**: Static metrics aggregate dynamic histories, potentially washing out sudden rapid shifts.
+
+### Statistical Validity
+* **Extreme class imbalance**: Only 322 malicious weeks exist out of 67,167 total weeks.
+* **Limited malicious samples**: Threat scenarios are simulated rather than organically occurring.
+* **Variance across threat scenarios**: Insider behaviors vary drastically (sabotage vs. IP theft vs. fraud).
+
 
 ---
 
-### 10.6 Deployed Analytics Dashboard
-To visualize and interact with the results of the Cyber DNA framework, we deployed a web-based interactive analytics dashboard. The interface provides key visual components:
+## 10. Future Work
 
-#### Overview Tab
-Provides global cohort statistics, threat distributions, model comparisons, and case studies:
-![Overview Dashboard](screenshots/overview.png)
+### Short-Term Extensions
+* **USB activity features**: Tracking mass storage transfers to detect data exfiltration.
+* **File access features**: Analyzing distinct file touches and directory traversal.
+* **Workstation diversity**: Monitoring the number of unique PCs accessed.
+* **After-hours activity**: Capturing off-shift logins.
+* **Weekend behavior metrics**: Tracking non-standard working days.
 
-#### Cyber Anthropology Tab
-Visualizes the weekly composite scores (BCS, CSS, IPS) and the long-term static consistency scores (IDP, BC, SRC) for selected users:
-![Cyber Anthropology Dashboard](screenshots/anthropology.png)
+### Medium-Term Extensions
+* **Communication graph analytics**: Enhancing DBS with topological network data.
+* **Centrality measures**: Utilizing PageRank and Betweenness Centrality for users.
+* **Community detection**: Identifying tightly coupled sub-departments.
+* **Adaptive departmental centroids**: Implementing exponential moving averages for seasonal drift.
+* **Dynamic organizational profiling**: Modeling the organization as a living entity.
 
-#### Temporal Drift (BDS) Tab
-Traces the weekly self-drift timeline for users, illustrating how malicious users spikes relate to baseline weeks:
-![Temporal Drift Dashboard](screenshots/drift_analytics.png)
+### Long-Term Extensions
+* **Real-time monitoring**: Moving from weekly batch processing to streaming architectures.
+* **Streaming analytics**: Utilizing Apache Kafka/Flink for live behavioral signatures.
+* **Cross-platform telemetry**: Integrating physical badging and cloud application logs.
+* **Multi-source behavioral fusion**: Combining host-based, network-based, and identity-based telemetry.
+* **AI-assisted analyst explanations**: Using LLMs to translate mathematical drift anomalies into human-readable alerts.
 
-#### BSI Similarity Heatmap Tab
-Draws the pairwise cosine similarity matrix of Digital Behavioral Signatures for the cohort:
-![BSI Similarity Heatmap](screenshots/similarity_heatmap.png)
-
-#### Research & Sweeps Tab
-Illustrates the experimental benchmarks, ablation studies, and departmental Z-score filter calibration sweeps:
-![Research and Sweeps Dashboard](screenshots/research_results.png)
-
----
-
-## 11. Discussion, Limitations, and Future Work
-
-### 11.1 Proposed Contributions
-1. **Dynamic Profiling**: Proposes weekly Digital Behavioral Signatures (DBS) to continuously model user footprints.
-2. **Cyber Anthropology Integration**: Formulates and validates metrics ($IDP$, $BC$, $SRC$) that capture behavioral consistency, successfully boosting precision by **29.89%** under ablation.
-3. **Scalable Architecture**: Optimizes feature extraction utilizing vectorized pandas logic, resolving session-pairing and tokenization bottlenecks.
-4. **Interactive Dashboard**: Deploys an interactive presentation dashboard displaying timelines, heatmaps, and results.
-
-### 11.2 Limitations & Threats to Validity
-* **Feature Sparsity**: The 8 raw features lack granular semantics (e.g., directory names, web topics, or specific executed commands). HR staff and developers look structurally similar in daily hours and login counts, degrading departmental centroids.
-* **Concept Drift**: Chronological analysis shows that benign behaviors naturally drift over a 1.5-year span, leading to baseline BDS spikes that mimic malicious drift.
-
-### 11.3 Future Work
-1. **Role-Specific Graph Features**: Incorporate communication graph metrics (PageRank, centrality) and file-system directory access patterns to build distinct departmental centroids.
-2. **Euclidean Distance Gating**: Transition from Cosine Similarity (BSI) to Euclidean distance to capture exfiltration volume shifts (behavioral magnitude).
-3. **Online Centroid Adaptation**: Implement exponential moving averages to adapt department centroids to seasonal drift.
 
 ---
 
-## 12. Conclusion
+## 11. Conclusion
 Dynamic Cyber DNA provides a robust, human-centered behavioral profiling layer for continuous authentication. By integrating mathematical anthropology scores and temporal drift tracking, it increases classifier precision on the real-world CERT r4.2 dataset, offering a viable path toward non-intrusive threat mitigation.
 
 ---
 
-## 13. Project Proposal Context & Details
-
+## Appendix: Project Proposal Context & Details
 ### PROJECT INTRO
 The digital footprints of individuals in corporate networks contain rich behavioral indicators that reflect their cognitive routines, social networks, and role-specific responsibilities. While traditional security layers authenticate users at entry, they fail to continuously verify identity or detect malicious behavioral deviations (insider threats) over time. This project proposes **Cyber DNA**, an active, human-centered framework designed to continuously audit user behavior. It generates a multi-dimensional behavioral signature that acts as a cognitive print, capturing work habits, writing cadences, and social network ties.
 
