@@ -1,0 +1,151 @@
+{
+  "dataset": {
+    "total_users": 1000,
+    "total_benign_users": 930,
+    "total_malicious_users": 70,
+    "total_user_weeks": 67167,
+    "total_malicious_weeks": 322,
+    "total_benign_weeks": 66845,
+    "train_user_weeks": 49867,
+    "test_user_weeks": 17300,
+    "evaluation_cohort_size": 170
+  },
+  "models": {
+    "Random Forest": {
+      "prec": 0.23076923076923078,
+      "rec": 0.036585365853658534,
+      "f1": 0.06315789473684211,
+      "auprc": 0.09030199142294211
+    },
+    "XGBoost": {
+      "prec": 0.14545454545454545,
+      "rec": 0.0975609756097561,
+      "f1": 0.11678832116788321,
+      "auprc": 0.10639984538916426
+    },
+    "Isolation Forest": {
+      "prec": 0.016666666666666666,
+      "rec": 0.012195121951219513,
+      "f1": 0.014084507042253521,
+      "auprc": 0.032176692862356256
+    },
+    "One-Class SVM": {
+      "prec": 0.0379746835443038,
+      "rec": 0.036585365853658534,
+      "f1": 0.037267080745341616,
+      "auprc": 0.042833227054505665
+    }
+  },
+  "anthropology": {
+    "average_idp_benign": 0.864728378271858,
+    "average_idp_malicious": 0.8621623157905497,
+    "average_bc_benign": 0.9237615762662621,
+    "average_bc_malicious": 0.9221635643720117,
+    "average_src_benign": 0.9857545129312782,
+    "average_src_malicious": 0.9864474830809842
+  },
+  "ablation": {
+    "A. Raw Features Only": {
+      "prec": 0.14545454545454545,
+      "rec": 0.0975609756097561,
+      "f1": 0.11678832116788321,
+      "auprc": 0.10639984538916426
+    },
+    "B. DBS Only": {
+      "prec": 0.14545454545454545,
+      "rec": 0.0975609756097561,
+      "f1": 0.11678832116788321,
+      "auprc": 0.10639984538916426
+    },
+    "C. DBS + BSI/BDS": {
+      "prec": 0.14634146341463414,
+      "rec": 0.07317073170731707,
+      "f1": 0.0975609756097561,
+      "auprc": 0.08793013995357146
+    },
+    "D. DBS + Anthropology": {
+      "prec": 0.4444444444444444,
+      "rec": 0.04878048780487805,
+      "f1": 0.08791208791208792,
+      "auprc": 0.1269470974863316
+    },
+    "E. Full Cyber DNA (Z-Score Filter)": {
+      "prec": 0.5,
+      "rec": 0.012195121951219513,
+      "f1": 0.023809523809523808,
+      "auprc": 0.11061900415143815
+    }
+  },
+  "calibration": [
+    {
+      "z_threshold": -3.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "auprc": 0.04843184663700668,
+      "suppressed_total": 10,
+      "suppressed_benign": 5,
+      "suppressed_malicious": 5
+    },
+    {
+      "z_threshold": -2.5,
+      "precision": 0.5,
+      "recall": 0.012195121951219513,
+      "f1": 0.023809523809523808,
+      "auprc": 0.06425927664824665,
+      "suppressed_total": 9,
+      "suppressed_benign": 5,
+      "suppressed_malicious": 4
+    },
+    {
+      "z_threshold": -2.0,
+      "precision": 0.5,
+      "recall": 0.012195121951219513,
+      "f1": 0.023809523809523808,
+      "auprc": 0.06425927664824665,
+      "suppressed_total": 9,
+      "suppressed_benign": 5,
+      "suppressed_malicious": 4
+    },
+    {
+      "z_threshold": -1.5,
+      "precision": 0.6666666666666666,
+      "recall": 0.024390243902439025,
+      "f1": 0.047058823529411764,
+      "auprc": 0.07980057911895368,
+      "suppressed_total": 8,
+      "suppressed_benign": 5,
+      "suppressed_malicious": 3
+    },
+    {
+      "z_threshold": -1.0,
+      "precision": 0.5,
+      "recall": 0.036585365853658534,
+      "f1": 0.06818181818181818,
+      "auprc": 0.08846613907578416,
+      "suppressed_total": 5,
+      "suppressed_benign": 3,
+      "suppressed_malicious": 2
+    },
+    {
+      "z_threshold": -0.5,
+      "precision": 0.4444444444444444,
+      "recall": 0.04878048780487805,
+      "f1": 0.08791208791208792,
+      "auprc": 0.1033666614398204,
+      "suppressed_total": 2,
+      "suppressed_benign": 1,
+      "suppressed_malicious": 1
+    },
+    {
+      "z_threshold": 0.0,
+      "precision": 0.4,
+      "recall": 0.04878048780487805,
+      "f1": 0.08695652173913043,
+      "auprc": 0.10167839853070026,
+      "suppressed_total": 1,
+      "suppressed_benign": 0,
+      "suppressed_malicious": 1
+    }
+  ]
+}
