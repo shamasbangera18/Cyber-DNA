@@ -1,0 +1,14 @@
+=== HARD VERIFICATION & LEAKAGE RECTIFICATION PIPELINE ===
+[*] Loading Ground Truth from insiders.csv...
+    Loaded 1069 true malicious user-weeks.
+[*] Loading CERT r4.2 Data (Full dataset loading required for true answers)...
+  -> Loading logon.csv
+  -> Loading email.csv
+  -> Loading device.csv
+    Feature matrix shape before split: (67238, 33)
+[*] Performing STRICT Chronological Train/Test Split (Train: W1-52, Test: W53-72)
+[*] Fitting MinMaxScaler ONLY on Training Data...
+    Train size: 49866 (Benign: 49626, Malicious: 240)
+    Test size:  17312 (Benign: 17230, Malicious: 82)
+[*] Saving Verification Artifacts to results/ ...
+=== HARD VERIFICATION COMPLETE ===

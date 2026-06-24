@@ -1,0 +1,44 @@
+{
+    "dataset_counts": {
+        "total_users": 1000,
+        "total_user_weeks": 67238,
+        "train_benign": 49626,
+        "train_malicious": 240,
+        "test_benign": 17230,
+        "test_malicious": 82
+    },
+    "features": [
+        "login_freq",
+        "active_hours_ratio",
+        "avg_session_duration",
+        "workstation_diversity",
+        "after_hours_logins",
+        "weekend_activity",
+        "email_freq",
+        "contact_diversity",
+        "vocab_diversity",
+        "reciprocity_ratio",
+        "response_time",
+        "usb_transfers",
+        "BDS",
+        "IDP",
+        "BC",
+        "SRC"
+    ],
+    "label_definition": "True labels derived strictly from answers/insiders.csv matching (user, week)",
+    "model_hyperparameters": {
+        "scale_pos_weight": 10,
+        "eval_metric": "logloss"
+    },
+    "threshold_used": 0.5,
+    "final_metrics": {
+        "precision": 0.6363636363636364,
+        "recall": 0.34146341463414637,
+        "f1": 0.4444444444444444,
+        "support": 82.0,
+        "macro_f1": 0.7212076706540154,
+        "weighted_f1": 0.9953490640829503,
+        "AUPRC": 0.0
+    },
+    "pipeline_status": "Strictly Leakage-Free"
+}
