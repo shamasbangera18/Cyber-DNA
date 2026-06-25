@@ -9,7 +9,7 @@ export default function BSISimilarityTab({ data }) {
     <div className="flex flex-col gap-6">
       <div className="bg-[#10b981]/10 border border-[#10b981]/30 rounded p-4 text-sm text-[#10b981] flex items-center justify-between">
         <span className="font-semibold">Derived Behavioral Similarity Distribution</span>
-        <span className="text-xs uppercase tracking-widest text-slate-400">Analyst Inspection View</span>
+        <span className="text-xs uppercase tracking-widest text-slate-400">Illustrative Synthetic Dashboard Data</span>
       </div>
 
       <div className="glass-panel p-6 space-y-6">

@@ -9,7 +9,7 @@ export default function TemporalDriftTab({ data }) {
     <div className="flex flex-col gap-6">
       <div className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 rounded p-4 text-sm text-[#8b5cf6] flex items-center justify-between">
         <span className="font-semibold">Illustrative Behavioral Drift Profile</span>
-        <span className="text-xs uppercase tracking-widest text-slate-400">Derived Analyst View</span>
+        <span className="text-xs uppercase tracking-widest text-slate-400">Illustrative Synthetic Dashboard Data</span>
       </div>
 
       <div className="glass-panel p-6 space-y-6">
