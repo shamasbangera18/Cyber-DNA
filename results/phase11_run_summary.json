@@ -1,0 +1,41 @@
+{
+    "best_configuration_name": "E. Full Phase 11",
+    "best_configuration_metrics": {
+        "configuration": "E. Full Phase 11",
+        "num_features": 29,
+        "threshold_selected": 0.30000000000000004,
+        "num_test_alerts": 75,
+        "tp": 38,
+        "fp": 37,
+        "fn": 44,
+        "precision": 0.5066666666666667,
+        "recall": 0.4634146341463415,
+        "f1": 0.4840764331210191,
+        "auprc": 0.4490324814084242,
+        "test_support_malicious": 82
+    },
+    "baseline_metrics": {
+        "configuration": "A. Baseline Verified",
+        "num_features": 16,
+        "threshold_selected": 0.5,
+        "num_test_alerts": 44,
+        "tp": 28,
+        "fp": 16,
+        "fn": 54,
+        "precision": 0.6363636363636364,
+        "recall": 0.34146341463414637,
+        "f1": 0.4444444444444445,
+        "auprc": 0.40591701893412047,
+        "test_support_malicious": 82
+    },
+    "thresholds_used": {
+        "A. Baseline Verified": 0.5,
+        "Baseline Tuned": 0.5,
+        "B. Baseline + USB": 0.5,
+        "C. Baseline + Workstation Diversity": 0.65,
+        "D. Baseline + Off-Hours": 0.55,
+        "E. Full Phase 11": 0.30000000000000004
+    },
+    "test_support_malicious": 82,
+    "confirmation": "Split remained strict chronological Week 1-52 Train, Week 53-72 Test. Leakage-free rules applied."
+}

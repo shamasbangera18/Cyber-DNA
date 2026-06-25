@@ -1,130 +1,51 @@
-# Cyber DNA: A Human-Centered Behavioral Similarity Assessment Framework
+# Cyber DNA
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![React](https://img.shields.io/badge/frontend-React--Vite-cyan.svg)](https://react.dev/)
-[![Dataset](https://img.shields.io/badge/dataset-CMU%20CERT%20r4.2-green.svg)](https://doi.org/10.1184/R1/12841247.v1)
+Cyber DNA is a continuous behavioral authentication and insider threat detection framework. It addresses the limitations of standard point-in-time perimeter defenses by building longitudinal models of user behavior using enterprise logs.
 
-Cyber DNA is a human-centered behavioral similarity assessment framework designed to continuously model user behavior in enterprise networks. Instead of relying on volatile technical indicators (like IP addresses, MAC addresses, or credentials) which are easily spoofed or obfuscated, Cyber DNA constructs weekly **Digital Behavioral Signatures (DBS)** to capture persistent, human-centric characteristics across activity patterns, communication styles, and organizational interaction networks.
+This repository contains the verified Phase 11 expanded model and the visualization dashboard.
 
-The framework integrates concepts from **Cyber Anthropology** to quantify behavioral continuity and role consistency, and introduces **Behavioral Drift Analysis** to track how digital identities evolve over time.
+## Final Verified Results
 
----
+* **Final model** = Full Phase 11
+* **Final metrics** = 48.41% F1 / 46.34% Recall / 50.67% Precision / 0.4490 AUPRC
+* **Ground truth** = CERT r4.2 `insiders.csv`
+* **Chronological split** = Weeks 1–52 train, Weeks 53–72 test
 
-## 🚀 Key Features
+All experiments and evaluations are executed without temporal data leakage. The `MinMaxScaler` normalization and threshold selection are strictly restricted to the training subset.
 
-*   **Multi-Dimensional Behavioral Signatures (DBS)**: Constructs weekly 8D profiles from logons, stylometric email footprints (vocabulary diversity, reply lag), and network interaction networks.
-*   **Behavioral Similarity Index (BSI)**: Measures alignment between distinct user profiles or users and organizational centroids using Cosine Similarity.
-*   **Behavioral Drift Score (BDS)**: Tracks weekly self-drift relative to baseline weeks using Euclidean distance ($L_2$ norm).
-*   **Cyber Anthropology Consistency Guardrails**: Computes static stability scores for Identity Persistence ($IDP$), Behavioral Continuity ($BC$), and Social Role Consistency ($SRC$), boosting classifier precision.
-*   **Adaptive Z-Score Departmental Filter**: Suppresses false-positive alerts caused by legitimate departmental transitions (transfers or promotions) by matching drift signatures to target department centroids.
-*   **Interactive React Analytics Dashboard**: A premium user interface featuring Overview statistics, Anthropology gauges, BDS drift timelines, BSI heatmaps, and Research sweeps.
+## Repository Structure
+* `cyber_dna_phase11_ablation.py` - The main, final leakage-free execution script.
+* `src/export_to_web.py` - Connects the ML outputs to the React dashboard.
+* `web_app/` - The React Dashboard source code.
+* `results/` - Final CSV/JSON metrics and findings.
+* `final_project_report.md` - The comprehensive final academic report.
+* `data/` - Put the CMU CERT r4.2 `r4.2.tar.bz2` extracted contents here.
+* `legacy_archive/` - Old prototype scripts and historical outputs.
 
----
+## Reproducing the Project
 
-## 📐 Mathematical Formulation
+### 1. Prerequisites
+You must download the CMU CERT r4.2 dataset and extract it into `data/cert_r4.2/r4.2`. Also ensure `answers/insiders.csv` is present in `data/cert_r4.2/answers`.
 
-### 1. Digital Behavioral Signature (DBS)
-For user $U$ and week $W$, the normalized feature vector is defined as:
-$$
-\mathbf{DBS}_{U, W} = \begin{bmatrix} \bar{f}_{LF} & \bar{f}_{AH} & \bar{f}_{SD} & \bar{f}_{EF} & \bar{f}_{VD} & \bar{f}_{RT} & \bar{f}_{CD} & \bar{f}_{RR} \end{bmatrix}^T
-$$
-*Where: LF = Logon Frequency, AH = Active Hour Ratio, SD = Session Duration, EF = Email Frequency, VD = Vocabulary Diversity, RT = Inverted Response Time, CD = Contact Diversity, RR = Reciprocity Ratio.*
+### 2. Final Execution Order
+To reproduce the entire pipeline from scratch, follow these three steps exactly:
 
-### 2. Behavioral Similarity Index (BSI)
-Calculates profile alignment between two signatures via Cosine Similarity:
-$$
-BSI(\mathbf{DBS}_A, \mathbf{DBS}_B) = \frac{\mathbf{DBS}_A \cdot \mathbf{DBS}_B}{\|\mathbf{DBS}_A\|_2 \|\mathbf{DBS}_B\|_2}
-$$
-
-### 3. Behavioral Drift Score (BDS)
-Measures weekly behavioral shift relative to baseline week $T_{\text{base}}$ via Euclidean distance:
-$$
-BDS(U, T_{\text{base}}, W) = \|\mathbf{DBS}_{U, W} - \mathbf{DBS}_{U, T_{\text{base}}}\|_2
-$$
-
-### 4. Cyber Anthropology stability metrics
-- **Identity Persistence ($IDP$)**: Transition stability:
-  $$IDP_U = e^{-\frac{1}{W-1}\sum_{t=1}^{W-1} \|\mathbf{DBS}_{U, T_{t+1}} - \mathbf{DBS}_{U, T_t}\|_2}$$
-- **Behavioral Continuity ($BC$)**: Smoothness of weekly drift step variations:
-  $$BC_U = e^{-\text{std}\left(\left\{\|\mathbf{DBS}_{U, T_{t+1}} - \mathbf{DBS}_{U, T_t}\|_2 \;\mid\; t \in [1, W-1]\right\}\right)}$$
-- **Social Role Consistency ($SRC$)**: Footprint stability:
-  $$SRC_U = 1.0 - \frac{1}{W-1}\sum_{t=1}^{W-1} |IPS_{U, T_t} - IPS_{U, T_{t+1}}|$$
-
----
-
-## 🛠️ Project Structure
-
-```text
-Cyber-DNA/
-│
-├── .gitignore                  # Git exclude configurations
-├── README.md                   # Project documentation
-├── cyber_dna_prototype.py      # Entry point for baseline data generation
-├── final_project_proposal.md   # Full academic proposal document
-│
-├── src/                        # Python Core Pipeline
-│   ├── preprocess.py           # Ingestion and normalization logic
-│   ├── signature.py            # DBS builder and anthropology calculators
-│   ├── engine.py               # BSI, BDS, and Department Centroid filter
-│   ├── models.py               # XGBoost & Random Forest classifier training
-│   ├── mock_generator.py       # Synthetic cohort generator (Alice, Bob, etc.)
-│   └── calibrate_dept_filter.py # Calibration scripts for Z-Score filters
-│
-├── results/                    # Saved Evaluation Metrics & Plots
-│   └── formulas/               # High-res formula PNGs for reports
-│
-├── screenshots/                # Dashboard interface screenshots
-│
-└── web_app/                    # Vite + React Analytics Dashboard UI
-    ├── src/
-    │   ├── App.jsx             # Core React dashboard components
-    │   ├── index.css           # Dashboard styling
-    │   └── cyber_dna_data.json # Visualized cohort JSON dataset
-    ├── index.html
-    └── vite.config.js
-```
-
----
-
-## 📦 Getting Started
-
-### Prerequisites
-- Python 3.8+
-- Node.js (v16+) & npm
-
-### 1. Ingesting & Running Python Pipeline
-Clone the repository and install the Python dependencies:
+**1. Run the ML Pipeline**
 ```bash
-git clone https://github.com/spoorthi2615/Cyber-DNA.git
-cd Cyber-DNA
-pip install pandas numpy scikit-learn xgboost matplotlib
+python cyber_dna_phase11_ablation.py
 ```
+*This extracts features, runs the chronological ML evaluation, and dumps the results to the `results/` folder.*
 
-To run the pipeline and perform features calibration on the cohort:
+**2. Export the Data**
 ```bash
-python src/run_sweep_diagnostic.py
+python src/export_to_web.py
 ```
+*This converts the final CSV metrics into the `cyber_dna_data.json` file for the frontend.*
 
-### 2. Launching React Analytics Dashboard
-Navigate to the web dashboard directory, install Node packages, and start the local development server:
+**3. Run Dashboard from `web_app/`**
 ```bash
 cd web_app
 npm install
 npm run dev
 ```
-Open [http://localhost:5173/](http://localhost:5173/) in your browser to view the interactive interface.
-
----
-
-## 📊 Evaluation & Gaps Bridged
-
-Typical insider threat systems perform static user-week evaluations. Cyber DNA's primary contributions include:
-1. **Dynamic Timelines**: Employs rolling $BDS$ timelines instead of static audits.
-2. **Anthropology Fusion**: Incorporates $IDP$, $BC$, and $SRC$ stability metrics into classifiers, which significantly suppresses false-alarm alerts and increases precision.
-3. **Legitimate Suppression**: Utilizes the Z-score Departmental Filter to suppress false-positive alarms triggered by legitimate employee transfers.
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+*This launches the React dashboard visualizing the final results.*

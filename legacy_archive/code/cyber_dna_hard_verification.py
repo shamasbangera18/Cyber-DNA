@@ -6,7 +6,7 @@ from scipy.spatial.distance import euclidean, cosine
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import StratifiedKFold
 import xgboost as xgb
-from sklearn.metrics import classification_report, precision_recall_curve, confusion_matrix, auc
+from sklearn.metrics import classification_report, precision_recall_curve, confusion_matrix, auc, average_precision_score
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -179,15 +179,30 @@ def run_verification():
     pd.DataFrame(confusion_matrix(y_test, y_pred)).to_csv(os.path.join(RESULTS_DIR, 'confusion_matrix.csv'), index=False)
     
     test_out = test_df[['user', 'week']].copy()
-    test_out['y_true'], test_out['y_pred'], test_out['y_score'] = y_test, y_pred, y_probs
+    test_out.rename(columns={'week': 'time_window'}, inplace=True)
+    test_out['y_true'] = y_test
+    test_out['y_pred'] = y_pred
+    test_out['y_prob'] = y_probs
     test_out.to_csv(os.path.join(RESULTS_DIR, 'test_predictions.csv'), index=False)
     
     pd.DataFrame({'feature': final_features, 'importance': model.feature_importances_ if hasattr(model, 'feature_importances_') else 0}).sort_values('importance', ascending=False).to_csv(os.path.join(RESULTS_DIR, 'feature_importance.csv'), index=False)
     
     try:
-        pr_auc = auc(*precision_recall_curve(y_test, y_probs)[:2])
-    except:
+        pr_auc = average_precision_score(y_test, y_probs)
+        precisions, recalls, thresholds = precision_recall_curve(y_test, y_probs)
+        # thresholds is length N, precisions/recalls are N+1.
+        # Align them by appending np.nan
+        thresholds_aligned = np.append(thresholds, np.nan)
+        pr_df = pd.DataFrame({
+            'precision': precisions,
+            'recall': recalls,
+            'threshold': thresholds_aligned
+        })
+        pr_df.to_csv(os.path.join(RESULTS_DIR, 'pr_curve.csv'), index=False)
+    except Exception as e:
         pr_auc = 0.0
+        log(f"Error calculating PR curve: {e}")
+        
     rep_dict = classification_report(y_test, y_pred, output_dict=True)
     summary = {
         "dataset_counts": {
@@ -209,7 +224,11 @@ def run_verification():
             "weighted_f1": rep_dict.get('weighted avg', {}).get('f1-score', 0.0),
             "AUPRC": float(pr_auc)
         },
-        "pipeline_status": "Strictly Leakage-Free"
+        "pipeline_status": "Strictly Leakage-Free",
+        "auprc": float(pr_auc),
+        "test_support_malicious": int(len(test_df[y_test==1])),
+        "evaluation_mode": "chronological_leakage_free",
+        "auprc_source": "predict_proba"
     }
     with open(os.path.join(RESULTS_DIR, 'run_summary.json'), 'w') as f:
         json.dump(summary, f, indent=4)

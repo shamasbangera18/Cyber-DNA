@@ -38,7 +38,11 @@
         "support": 82.0,
         "macro_f1": 0.7212076706540154,
         "weighted_f1": 0.9953490640829503,
-        "AUPRC": 0.0
+        "AUPRC": 0.40591701893412047
     },
-    "pipeline_status": "Strictly Leakage-Free"
+    "pipeline_status": "Strictly Leakage-Free",
+    "auprc": 0.40591701893412047,
+    "test_support_malicious": 82,
+    "evaluation_mode": "chronological_leakage_free",
+    "auprc_source": "predict_proba"
 }
