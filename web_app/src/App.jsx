@@ -119,9 +119,9 @@ export default function App() {
       {/* Header Banner */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <div>
-          <h1 className="gradient-text" style={{ fontSize: '2.4rem', marginBottom: '4px', letterSpacing: '-0.02em' }}>CYBER DNA ANALYTICS</h1>
+          <h1 className="gradient-text" style={{ fontSize: '2.4rem', marginBottom: '4px', letterSpacing: '-0.02em' }}>Cyber DNA</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
-            Real-World CMU CERT r4.2 Insider Threat Evaluation Platform
+            Continuous Behavioral Authentication & Insider Threat Analytics
           </p>
         </div>
         <div style={{
@@ -133,7 +133,7 @@ export default function App() {
           fontWeight: 700,
           color: 'var(--color-red)'
         }}>
-          🛡️ CERT COHORT VERIFIED DEPLOYMENT
+          📊 CERT r4.2 Evaluation
         </div>
       </header>
 
@@ -173,6 +173,11 @@ export default function App() {
                   {isUserMalicious(selectedUser) ? 'Malicious Cohort' : 'High-Drift Benign'}
                 </span>
               </div>
+              {!isUserMalicious(selectedUser) && (
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '8px', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '6px' }}>
+                  * High drift reflects natural role transition (e.g. project shifts), not malicious threat.
+                </div>
+              )}
             </div>
           </div>
 
